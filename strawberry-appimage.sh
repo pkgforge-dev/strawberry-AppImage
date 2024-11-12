@@ -66,7 +66,7 @@ ldd ./shared/lib/libgst* \
   | awk -F"[> ]" '{print $4}' | xargs -I {} cp -nv {} ./shared/lib || true
 
 echo "Stripping libs and bins..."
-find ./shared/lin ./shared/bin -type f -exec strip -s -R .comment --strip-unneeded {} ';'
+find ./shared/lib ./shared/bin -type f -exec strip -s -R .comment --strip-unneeded {} ';'
 
 # Prepare sharun
 echo "Preparing sharun..."
