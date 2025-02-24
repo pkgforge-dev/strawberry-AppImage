@@ -27,7 +27,7 @@ cp -v /usr/share/icons/hicolor/128x128/apps/"$ICON" ./.DirIcon
 # ADD LIBRARIES
 wget "$LIB4BN" -O ./lib4bin
 chmod +x ./lib4bin
-xvfb-run -a -- ./lib4bin -p -v -s -k -e \ 
+xvfb-run -a -- ./lib4bin -p -v -s -k -e \
 	/usr/bin/strawberry* \
 	/usr/lib/libgst* \
 	/usr/lib/qt6/plugins/iconengines/* \
