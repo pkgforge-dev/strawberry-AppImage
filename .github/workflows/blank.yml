@@ -23,7 +23,7 @@ jobs:
           desktop-file-utils git artix-archlinux-support llvm mesa xorg-server-xvfb
         pacman-key --init && pacman-key --populate archlinux
         printf "\n[extra]\nInclude = /etc/pacman.d/mirrorlist-arch\n" | tee -a /etc/pacman.conf
-        pacman -Syu --noconfirm zsync strawberry qt6ct qt6-wayland
+        pacman -Syu --noconfirm zsync strawberry qt6ct qt6-wayland pulseaudio pulseaudio-alsa pipewire-audio
 
         chmod +x ./*-appimage.sh && ./*-appimage.sh
         mkdir dist
