@@ -30,7 +30,7 @@ chmod +x ./lib4bin
 xvfb-run -a -- ./lib4bin -p -v -s -k -e \
 	/usr/bin/strawberry* \
 	/usr/lib/libgst* \
-	/usr/lib/gstreamer-*/* \
+	/usr/lib/gstreamer-*/*.so \
 	/usr/lib/qt6/plugins/iconengines/* \
 	/usr/lib/qt6/plugins/imageformats/* \
 	/usr/lib/qt6/plugins/platforms/* \
