@@ -38,7 +38,10 @@ xvfb-run -a -- ./lib4bin -p -v -s -k -e \
 	/usr/lib/qt6/plugins/sqldrivers/* \
 	/usr/lib/qt6/plugins/tls/* \
 	/usr/lib/qt6/plugins/xcbglintegrations/* \
-	/usr/lib/qt6/plugins/wayland-*/*
+	/usr/lib/qt6/plugins/wayland-*/* \
+	/usr/lib/pulseaudio/* \
+	/usr/lib/pipewire-*/* \
+	/usr/lib/spa-*/*/*
 
 # DEPLOY GSTREAMER
 echo "Deploying Gstreamer..."
