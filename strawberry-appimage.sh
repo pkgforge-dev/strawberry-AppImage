@@ -46,7 +46,7 @@ xvfb-run -a -- ./lib4bin -p -v -s -k -e \
 
 # DEPLOY GSTREAMER
 echo "Deploying Gstreamer binaries..."
-cp -vn /usr/lib/gstreamer-*/*  ./shared/lib/gstreamer-*
+cp -vn /usr/lib/gstreamer-*/*  ./shared/lib/gstreamer-* || true
 
 # Patch a relative interpreter for the gstreamer plugins
 echo "Sharunning Gstreamer bins..."
