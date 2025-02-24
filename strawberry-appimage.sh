@@ -30,6 +30,7 @@ chmod +x ./lib4bin
 xvfb-run -a -- ./lib4bin -p -v -s -k -e \
 	/usr/bin/strawberry* \
 	/usr/lib/libgst* \
+	/usr/lib/gstreamer-*/* \
 	/usr/lib/qt6/plugins/iconengines/* \
 	/usr/lib/qt6/plugins/imageformats/* \
 	/usr/lib/qt6/plugins/platforms/* \
@@ -44,8 +45,8 @@ xvfb-run -a -- ./lib4bin -p -v -s -k -e \
 	/usr/lib/spa-*/*/*
 
 # DEPLOY GSTREAMER
-echo "Deploying Gstreamer..."
-cp -r /usr/lib/gstreamer-1.0  ./shared/lib
+echo "Deploying Gstreamer binaries..."
+cp -vn /usr/lib/gstreamer-*/*  ./shared/lib/gstreamer-*
 
 # Patch a relative interpreter for the gstreamer plugins
 echo "Sharunning Gstreamer bins..."
@@ -58,15 +59,6 @@ for plugin in ./shared/lib/gstreamer-1.0/gst-*; do
 		echo "$plugin is not a binary, skipping..."
 	fi
 done
-
-# DEPLOY DEPENDENCIES OF EXTRA LIBS
-echo "Deploying deps of Gstreamer..."
-ldd ./shared/lib/libgst* \
-	./shared/lib/gstreamer-1.0/* 2>/dev/null \
-	| awk -F"[> ]" '{print $4}' | xargs -I {} cp -nv {} ./shared/lib || true
-
-echo "Stripping libs and bins..."
-find ./shared/lib ./shared/bin -type f -exec strip -s -R .comment --strip-unneeded {} ';'
 
 # Prepare sharun
 ln ./sharun ./AppRun
