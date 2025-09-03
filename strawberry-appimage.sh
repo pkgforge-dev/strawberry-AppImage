@@ -25,3 +25,7 @@ chmod +x ./quick-sharun
 wget --retry-connrefused --tries=30 "$URUNTIME" -O ./uruntime2appimage
 chmod +x ./uruntime2appimage
 ./uruntime2appimage
+
+mkdir -p ./dist
+mv -v ./*.AppImage ./dist
+mv -v ~/version    ./dist
