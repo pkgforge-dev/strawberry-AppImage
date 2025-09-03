@@ -21,7 +21,6 @@ pacman -Syu --noconfirm \
 	pulseaudio-alsa  \
 	qt6ct            \
 	qt6-wayland      \
-	strawberry       \
 	wget             \
 	xorg-server-xvfb \
 	zsync
@@ -31,5 +30,12 @@ echo "---------------------------------------------------------------"
 wget --retry-connrefused --tries=30 "$EXTRA_PACKAGES" -O ./get-debloated-pkgs.sh
 chmod +x ./get-debloated-pkgs.sh
 ./get-debloated-pkgs.sh --add-mesa --prefer-nano qt6-base-mini libxml2-mini opus-mini
+
+echo "Building strawberry..."
+echo "---------------------------------------------------------------"
+git clone https://gitlab.archlinux.org/archlinux/packaging/packages/strawberry
+cd ./strawberry
+makepkg -fs --skippgpcheck
+pacman -U --noconfirm ./*.pkg.tar.zst
 
 pacman -Q strawberry | awk '{print $2; exit}' > ~/version
