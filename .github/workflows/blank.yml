@@ -5,92 +5,74 @@ concurrency:
 
 on:
   schedule:
-    - cron: "0 15 * * 0"
-  workflow_dispatch:
+    - cron: "0 7 1/21 * *"
+  workflow_dispatch: {}
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-    container: artixlinux/artixlinux:latest
+    name: "${{ matrix.name }} (${{ matrix.arch }})"
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      matrix:
+        include:
+          - runs-on: ubuntu-latest
+            name: Build AppImage
+            arch: x86_64
+          - runs-on: ubuntu-24.04-arm
+            name: Build AppImage
+            arch: aarch64
+    container: ghcr.io/pkgforge-dev/archlinux:latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: build
-      if: always()
-      run: |
-        sed -i 's/DownloadUser/#DownloadUser/g' /etc/pacman.conf
-        pacman -Syu --noconfirm base-devel strace patchelf curl wget xcb-util-cursor \
-          desktop-file-utils git artix-archlinux-support llvm mesa xorg-server-xvfb
-        pacman-key --init && pacman-key --populate archlinux
-        printf "\n[extra]\nInclude = /etc/pacman.d/mirrorlist-arch\n" | tee -a /etc/pacman.conf
-        pacman -Syu --noconfirm zsync strawberry qt6ct qt6-wayland pulseaudio pulseaudio-alsa pipewire-audio
+      - name: Get dependencies
+        run: chmod +x ./get-dependencies.sh && ./get-dependencies.sh
 
-    - name: Install iculess libxml2 and qt6-core
-      run: |
-        QT6_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/qt6-base-iculess-x86_64.pkg.tar.zst"
-        LIBXML_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/libxml2-iculess-x86_64.pkg.tar.zst"
-        wget --retry-connrefused --tries=30 "$QT6_URL" -O ./qt6-base-iculess.pkg.tar.zst
-        wget --retry-connrefused --tries=30 "$LIBXML_URL" -O ./libxml2-iculess.pkg.tar.zst
-        pacman -U --noconfirm ./qt6-base-iculess.pkg.tar.zst ./libxml2-iculess.pkg.tar.zst
-        rm -f ./qt6-base-iculess.pkg.tar.zst ./libxml2-iculess.pkg.tar.zst
+      - name: Make AppImage
+        run: chmod +x ./*-appimage.sh && ./*-appimage.sh
 
-    - name: Install ffmpeg mini
-      run: |
-        FFMPEG_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/ffmpeg-mini-x86_64.pkg.tar.zst"
-        wget --retry-connrefused --tries=30 "$FFMPEG_URL" -O ./ffmpeg-mini-x86_64.pkg.tar.zst
-        pacman -U --noconfirm ./ffmpeg-mini-x86_64.pkg.tar.zst
-        rm -f ./ffmpeg-mini-x86_64.pkg.tar.zst
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: AppImage-${{ matrix.arch }}
+          path: dist
 
-    - name: Make AppImage
-      run: |
-        chmod +x ./*-appimage.sh && ./*-appimage.sh
-        mkdir dist
-        mv *.AppImage* dist/
-
-    - name: Check version file
-      run: |
-       cat ~/version
-       echo "APP_VERSION=$(cat ~/version)" >> "${GITHUB_ENV}"
-    
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4.4.3
-      with:
-        name: AppImage
-        path: 'dist'
-        
-    - name: Upload version file
-      uses: actions/upload-artifact@v4.4.3
-      with:
-       name: version
-       path: ~/version
-    
   release:
-      needs: [build]
-      permissions: write-all
-      runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'main' }}
+    needs: [build]
+    permissions: write-all
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4.3.0
+        with:
+          pattern: AppImage-*
+          merge-multiple: true
 
-      steps:
-        - uses: actions/download-artifact@v4.1.8
-          with:
-            name: AppImage
-        - uses: actions/download-artifact@v4.1.8
-          with:
-            name: version
+      - name: Read version and Get date
+        run: |
+          cat ./version
+          echo "VERSION=$(cat ./version)" >> "${GITHUB_ENV}"
+          echo "DATE=$(date +'%Y-%m-%d_%s')" >> "${GITHUB_ENV}"
 
-        - name: Read version and Get date
-          run: |
-            echo "VERSION=$(cat version)" >> "${GITHUB_ENV}"
-            echo "DATE=$(date +'%Y-%m-%d_%s')" >> "$GITHUB_ENV"
+      - name: Release Artifacts
+        uses: softprops/action-gh-release@v2.2.2
+        with:
+          name: "strawberry: ${{ env.VERSION }}"
+          tag_name: "${{ env.VERSION }}@${{ env.DATE }}"
+          prerelease: false
+          draft: false
+          generate_release_notes: false
+          make_latest: true
+          files: |
+            *.AppImage*
+            *.AppBundle*
 
-        - name: Release Artifacts
-          uses: softprops/action-gh-release@v2.2.2
-          with:
-            name: "strawberry: ${{ env.VERSION }}"
-            tag_name: "${{ env.VERSION }}@${{ env.DATE }}"
-            prerelease: false
-            draft: false
-            generate_release_notes: false
-            fail_on_unmatched_files: false
-            make_latest: true
-            files: |
-              *.AppImage*
+      - uses: actions/checkout@v4
+      - name: Update LATEST_VERSION
+        run: |
+          echo "${{ env.VERSION }}" > ./LATEST_VERSION
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ./LATEST_VERSION
+          git commit --allow-empty -m 'bump `LATEST_VERSION` [skip ci]'
+          git push
