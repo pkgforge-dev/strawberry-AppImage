@@ -34,6 +34,7 @@ chmod +x ./get-debloated-pkgs.sh
 
 echo "Building strawberry..."
 echo "---------------------------------------------------------------"
+sed -i 's|EUID == 0|EUID == 69|g' /usr/bin/makepkg
 git clone https://gitlab.archlinux.org/archlinux/packaging/packages/strawberry
 cd ./strawberry
 makepkg -fs --skippgpcheck
