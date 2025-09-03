@@ -27,5 +27,5 @@ chmod +x ./uruntime2appimage
 ./uruntime2appimage
 
 mkdir -p ./dist
-mv -v ./*.AppImage ./dist
-mv -v ~/version    ./dist
+mv -v ./*.AppImage* ./dist
+mv -v ~/version     ./dist
