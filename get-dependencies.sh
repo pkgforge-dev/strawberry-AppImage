@@ -9,6 +9,7 @@ pacman -Syu --noconfirm \
 	base-devel       \
 	curl             \
 	git              \
+	gst-plugins-bad  \
 	libxcb           \
 	libxcursor       \
 	libxi            \
