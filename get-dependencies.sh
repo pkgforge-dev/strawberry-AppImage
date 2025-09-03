@@ -39,6 +39,6 @@ git clone https://gitlab.archlinux.org/archlinux/packaging/packages/strawberry
 cd ./strawberry
 sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 makepkg -fs --noconfirm --skippgpcheck
-pacman -U --noconfirm ./*.pkg.tar.zst
+pacman -U --noconfirm ./*.pkg.tar.*
 
 pacman -Q strawberry | awk '{print $2; exit}' > ~/version
