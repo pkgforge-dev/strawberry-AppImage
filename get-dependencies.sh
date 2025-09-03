@@ -7,8 +7,6 @@ EXTRA_PACKAGES="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImage
 
 pacman -Syu --noconfirm \
 	base-devel       \
-	boost            \
-	cmake            \
 	curl             \
 	git              \
 	gst-plugins-bad  \
@@ -23,10 +21,7 @@ pacman -Syu --noconfirm \
 	pulseaudio       \
 	pulseaudio-alsa  \
 	qt6ct            \
-	qt6-tools        \
 	qt6-wayland      \
-	rapidjson        \
-	sparsehash       \
 	wget             \
 	xorg-server-xvfb \
 	zsync
@@ -42,7 +37,7 @@ echo "---------------------------------------------------------------"
 sed -i 's|EUID == 0|EUID == 69|g' /usr/bin/makepkg
 git clone https://gitlab.archlinux.org/archlinux/packaging/packages/strawberry
 cd ./strawberry
-makepkg -fs --skippgpcheck
+makepkg -fs --noconfirm --skippgpcheck
 pacman -U --noconfirm ./*.pkg.tar.zst
 
 pacman -Q strawberry | awk '{print $2; exit}' > ~/version
