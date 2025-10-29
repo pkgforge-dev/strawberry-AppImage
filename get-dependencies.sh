@@ -18,6 +18,7 @@ pacman -Syu --noconfirm \
 	libxrandr        \
 	libxtst          \
 	pipewire-audio   \
+	pipewire-jack    \
 	pulseaudio       \
 	pulseaudio-alsa  \
 	qt6ct            \
