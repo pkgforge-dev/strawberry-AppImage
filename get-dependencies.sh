@@ -23,7 +23,6 @@ pacman -Syu --noconfirm \
 	pulseaudio       \
 	pulseaudio-alsa  \
 	qt6ct            \
-	qt6-wayland      \
 	strawberry       \
 	wget             \
 	xorg-server-xvfb \
