@@ -9,6 +9,8 @@ echo "---------------------------------------------------------------"
 pacman -Syu --noconfirm \
 	gst-libav        \
 	gst-plugins-bad  \
+	kvantum          \
+	lxqt-qtplugin    \
 	pipewire-audio   \
 	pipewire-jack    \
 	qt6ct            \
